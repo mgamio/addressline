@@ -19,7 +19,7 @@ public class AddresslineServiceImplTest {
 	@Test
 	public void whenSpacesThenReturnStringSplited( ) {
 		
-		String concatenatedStreet = "Winterallee 3";
+		String concatenatedStreet = "3d, Winterallee";
 		
 		Address address = addresslineService.separateFields(concatenatedStreet);
 		assertEquals("Winterallee", address.getStreetName());
