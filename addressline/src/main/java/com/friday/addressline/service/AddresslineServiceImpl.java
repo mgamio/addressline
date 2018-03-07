@@ -1,5 +1,6 @@
 package com.friday.addressline.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.friday.addressline.model.Address;
@@ -10,30 +11,53 @@ import java.util.StringTokenizer;
 public class AddresslineServiceImpl implements AddresslineService {
 
 	private static final String SEPARATOR_COMMA = ",";
+	private static final String SPACE = " ";
+
+	private Address address;
+
+	@Autowired
+	public AddresslineServiceImpl(Address address) {
+		this.address = address;
+	}
 
 	@Override
 	public Address separateFields(String concatenatedStreet) {
-		
-		Address address = new Address();
 
 		StringTokenizer tokensOfFields;
 
 		if (concatenatedStreet.contains(SEPARATOR_COMMA)) {
 			tokensOfFields = new StringTokenizer(concatenatedStreet, SEPARATOR_COMMA);
 		} else {
-			tokensOfFields = new StringTokenizer(concatenatedStreet);
+			tokensOfFields = new StringTokenizer(concatenatedStreet); //Space by default
 		}
 
+		StringBuilder fieldsOfName = new StringBuilder();
+		StringBuilder fieldsOfNumber = new StringBuilder();
+
+		int counter = 0;
+		boolean firstOccurrenceForName = false;
+
 		while(tokensOfFields.hasMoreElements()) {
+			counter++;
 			String field = tokensOfFields.nextToken().trim();
 			if (Character.isDigit(field.charAt(0))) {
-				address.setStreetNumber(field);
+				fieldsOfNumber.append((field + SPACE));
 			} else {
-				address.setStreetName(field);
+				if (firstOccurrenceForName & fieldsOfNumber.length() > 0) {
+				  fieldsOfNumber.append((field + SPACE));
+				} else {
+					fieldsOfName.append(field + SPACE);
+					if (counter == 1)
+						firstOccurrenceForName = true;
+				}
 			}
 		}
 
+		address.setStreetName(fieldsOfName.toString().trim());
+		address.setStreetNumber(fieldsOfNumber.toString().trim());
+
 		return address;
+
 	}
 
 	
